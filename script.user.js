@@ -20,12 +20,12 @@ function getDislikes() {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', `https://antidislikeapi.herokuapp.com/dislikes?id=${videoId()}`, true);
         xhr.onload = () => resolve(JSON.parse(xhr.responseText));
-        xhr.onerror = err => console.error('XHR Failed', err);
+        xhr.onerror = err => console.error(err);
         xhr.send();
     });
 }
 
-const isVideoLoaded = () => document.querySelector(`ytd-watch-flexy[video-id='${videoId()}']`) !== null
+const videoLoaded = () => document.querySelector(`ytd-watch-flexy[video-id='${videoId()}']`) !== null
 
 
 function format(input) {
@@ -50,7 +50,7 @@ async function init() {
         console.log(res);
         const dislikes = res.items[0].statistics.dislikeCount;
         while (!hasLoaded) {
-            if (getButtons()?.offsetParent && isVideoLoaded()) {
+            if (getButtons()?.offsetParent && videoLoaded()) {
                 hasLoaded = true;
                 console.log('loaded dislikes');
                 const buttons = getButtons();
