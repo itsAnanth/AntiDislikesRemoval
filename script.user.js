@@ -56,7 +56,7 @@ async function init() {
         const dislikes = res.items[0].statistics.dislikeCount;
         while (!hasLoaded) {
             // loop till buttons and video has loaded
-            if (getButtons()?.offsetParent && videoLoaded()) {
+            if (getButtons().children[1] && videoLoaded()) {
                 hasLoaded = true;
                 console.log('loaded dislikes');
                 const buttons = getButtons();
