@@ -9,12 +9,14 @@
 // @grant GM.xmlHttpRequest
 // ==/UserScript==
 
-
+// get video id from url (example - https://www.youtube.com/watch?v=158plNHX4vw, where 158plNHX4vw is the id)
 const videoId = () => (new URLSearchParams(window.location.search)).get('v');
 
-
+// get like & dislike button holder
 const getButtons = () => document.getElementById("menu-container")?.querySelector("#top-level-buttons-computed");
 
+// send request to backend and retrieve dislike count 
+// @returns number
 function getDislikes() {
     return new Promise(resolve => {
         const xhr = new XMLHttpRequest();
@@ -25,9 +27,10 @@ function getDislikes() {
     });
 }
 
+// check if video has loaded
 const videoLoaded = () => document.querySelector(`ytd-watch-flexy[video-id='${videoId()}']`) !== null
 
-
+// format dislike counts appropriately
 function format(input) {
     if (input.length < 4) return input;
     else if (input.length >= 4 && input.length < 7)
@@ -38,11 +41,13 @@ function format(input) {
         return (parseInt(input) / Math.pow(10, 9)).toFixed(1).toString() + 'B';
 }
 
+// util function to delay loops (performance reasons)
 function wait(ms) {
     return new Promise(res => setTimeout(res, ms));
 }
 
 async function init() {
+    // check if location is a video or not
     if (window.location.href.indexOf("watch?") >= 0) {
         console.log('Location is video');
         let hasLoaded = false;
@@ -50,10 +55,12 @@ async function init() {
         console.log(res);
         const dislikes = res.items[0].statistics.dislikeCount;
         while (!hasLoaded) {
+            // loop till buttons and video has loaded
             if (getButtons()?.offsetParent && videoLoaded()) {
                 hasLoaded = true;
                 console.log('loaded dislikes');
                 const buttons = getButtons();
+                // children[1] = dislikes, [0] = likes
                 buttons.children[1].querySelector("#text").innerText = format(String(dislikes));
             } else await wait(200);
         }
